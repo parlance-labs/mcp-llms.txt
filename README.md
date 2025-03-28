@@ -1,6 +1,6 @@
 # mcp-llms
 
-A Python package for LLM-related functionality.
+Minimal example of MCP for parsing `llms.txt`
 
 ## Installation
 
