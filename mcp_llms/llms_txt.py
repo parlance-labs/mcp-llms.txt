@@ -57,7 +57,7 @@ async def parse_llms_txt(llms_txt_url: str, query: str) -> str:
         content = await fetch_markdown(url)
         if content: results.append(f"# {link['title']}\n{link['description']}\n\n{content}\n---\n")
         else: results.append(f"Could not fetch content from {url}\n---\n")
-    return "\n".join(results) if results else "No relevant documentation found."s
+    return "\n".join(results) if results else "No relevant documentation found."
 
 if __name__ == "__main__":
     mcp.run(transport='stdio')
