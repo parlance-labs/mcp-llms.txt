@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-llms-txt"
+version = "0.1.0"
+description = "MCP Server for llms.txt"
+authors = [
+    {name = "Hamel Husain", email = "hamel.husain@gmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "httpx",
+    "mcp[cli]",
+    "claudette"
+]
+
+[project.urls]
+Homepage = "https://github.com/parlance-labs/mcp-llms.txt"
+
+[project.scripts]
+llms-txt-server = "mcp_llms.llms_txt:main" 
