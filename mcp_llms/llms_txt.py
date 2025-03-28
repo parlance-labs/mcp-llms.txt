@@ -3,7 +3,6 @@ from mcp.server.fastmcp import FastMCP
 from claudette import Client
 
 mcp = FastMCP("llms-txt-parser")
-# Constants
 USER_AGENT = "llms-txt-parser/1.0"
 CLAUDE_MODEL = "claude-3-7-sonnet-latest" 
 
@@ -29,18 +28,15 @@ async def fetch_markdown(url: str) -> str | None:
             response = await client.get(url, headers=headers, timeout=30.0)
             response.raise_for_status()
             return response.text
-        except Exception:
-            return None
+        except Exception: return None
 
 @mcp.tool()
 async def parse_llms_txt(llms_txt_url: str, query: str) -> str:
     """Parse an llms.txt file and fetch relevant documentation based on a query."""
-    # Fetch llms.txt content
+
     llms_content = await fetch_markdown(llms_txt_url)
-    if not llms_content:
-        return f"Error: Could not fetch llms.txt from {llms_txt_url}"
+    if not llms_content: return f"Error: Could not fetch llms.txt from {llms_txt_url}"
     
-    # Use Claude's structured output to get relevant links
     client = Client(CLAUDE_MODEL)
     relevant_links = client.structured(
         f"""Given this llms.txt content and user query, analyze which documentation links are most relevant.
@@ -55,22 +51,13 @@ async def parse_llms_txt(llms_txt_url: str, query: str) -> str:
         links
     )
     
-    # Fetch relevant documentation
     results = []
     for link in relevant_links:
-        print(relevant_links)
         url = link['url']
         content = await fetch_markdown(url)
-        if content:
-            results.append(f"# {link['title']}\n{link['description']}\n\n{content}\n---\n")
-        else:
-            results.append(f"Could not fetch content from {url}\n---\n")
-    
-    return "\n".join(results) if results else "No relevant documentation found."
-
-def main():
-    mcp.run(transport='stdio')
+        if content: results.append(f"# {link['title']}\n{link['description']}\n\n{content}\n---\n")
+        else: results.append(f"Could not fetch content from {url}\n---\n")
+    return "\n".join(results) if results else "No relevant documentation found."s
 
 if __name__ == "__main__":
-    # Initialize and run the server
-    main()
+    mcp.run(transport='stdio')
