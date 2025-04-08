@@ -6,21 +6,7 @@ mcp = FastMCP("llms-txt-parser")
 USER_AGENT = "llms-txt-parser/1.0"
 CLAUDE_MODEL = "claude-3-7-sonnet-latest" 
 
-def links(url: str, title: str, description: str):
-    """
-    Create a formatted link entry for documentation.
-    
-    Args:
-        url: URL to the documentation
-        title: Title of the link
-        description: Optional description of the link
-        
-    Returns:
-        tuple: (url, title, description)
-    """
-    return {'url':url, 'title':title, 'description':description}
-
-async def fetch_markdown(url: str) -> str | None:
+async def fetch_url(url: str) -> str | None:
     """Fetch markdown content from a URL."""
     headers = {"User-Agent": USER_AGENT}
     async with httpx.AsyncClient() as client:
@@ -30,11 +16,16 @@ async def fetch_markdown(url: str) -> str | None:
             return response.text
         except Exception: return None
 
+@mcp.resource("fasthtml://chatbot")
+def get_fasthtml_chatbot_rules() -> str:
+    """Rules for implementing chatbot interfaces in FastHTML applications. Demonstrates real-time message handling, chat history management, and integration with AI/ML services. Includes patterns for streaming responses, user input handling, and conversation state management."""
+    return "App configuration here"
+
 @mcp.tool()
 async def parse_llms_txt(llms_txt_url: str, query: str) -> str:
     """Parse an llms.txt file and fetch relevant documentation based on a query."""
 
-    llms_content = await fetch_markdown(llms_txt_url)
+    llms_content = await fetch_url(llms_txt_url)
     if not llms_content: return f"Error: Could not fetch llms.txt from {llms_txt_url}"
     
     client = Client(CLAUDE_MODEL)
@@ -54,7 +45,7 @@ async def parse_llms_txt(llms_txt_url: str, query: str) -> str:
     results = []
     for link in relevant_links:
         url = link['url']
-        content = await fetch_markdown(url)
+        content = await fetch_url(url)
         if content: results.append(f"# {link['title']}\n{link['description']}\n\n{content}\n---\n")
         else: results.append(f"Could not fetch content from {url}\n---\n")
     return "\n".join(results) if results else "No relevant documentation found."
